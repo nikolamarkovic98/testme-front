@@ -5,11 +5,11 @@ import { sendHTTP } from "./requests";
 
 import Header from "./components/Header";
 import Contact from "./components/Contact";
-import SignUp from "./components/AuthComponents/SignUp";
-import SignIn from "./components/AuthComponents/SignIn";
+import SignUpPage from "./pages/Auth/SignUp/SignUpPage";
+import SignInPage from "./pages/Auth/SignIn/SignInPage";
 import CreateTest from "./components/CreateTest";
 import User from "./components/User";
-import Home from "./components/Home";
+import HomePage from "./pages/Home/HomePage";
 import TakeTest from "./components/TakeTest";
 import Footer from "./components/Footer";
 import TestBox from "./components/TestBox";
@@ -83,7 +83,7 @@ const App = () => {
     };
 
     return (
-        <div className="app" onClick={(e) => this.showSearch(e)}>
+        <div className="app">
             {// test dialog
             state.test && (
                 <div className="dialog-wrapper" data-id="dialog">
@@ -112,7 +112,7 @@ const App = () => {
                     <Route
                         path="/"
                         element={
-                            <Home
+                            <HomePage
                                 tests={state.tests}
                                 h1={
                                     state.tests.length
@@ -122,12 +122,12 @@ const App = () => {
                             />
                         }
                     />
-                    <Route path="/contact" element={Contact} />
-                    <Route path="/signup" element={SignUp} />
-                    <Route path="/signin" element={SignIn} />
-                    <Route path="/createtest" element={CreateTest} />
-                    <Route path="/taketest/:id" element={TakeTest} />
-                    <Route path="/user/:id" element={User} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/signup" element={<SignUpPage />} />
+                    <Route path="/signin" element={<SignInPage />} />
+                    <Route path="/createtest" element={<CreateTest />} />
+                    <Route path="/taketest/:id" element={<TakeTest />} />
+                    <Route path="/user/:id" element={<User />} />
                 </Routes>
             </main>
             <Footer />

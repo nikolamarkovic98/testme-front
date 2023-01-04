@@ -1,4 +1,11 @@
-.landing{
+.home .home-wrapper {
+    margin: 100px 0;
+}
+.home .home-wrapper h1 {
+    margin-top: 0;
+}
+
+.landing {
     position: relative;
     z-index: -2;
     width: 100%;
@@ -6,22 +13,22 @@
     background-color: #492827;
     color: #f0e3c5;
 }
-.landing .bg{
+.landing .bg {
     position: absolute;
     z-index: -1;
     width: 100%;
     min-height: 740px;
-    background-image: url('./landing-bg.jpg');
+    background-image: url("./landing-bg.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     opacity: 0.6;
 }
-.landing .content{
+.landing .content {
     width: 80%;
     padding-top: 200px;
     text-align: right;
 }
-.landing h1{
+.landing h1 {
     margin: 0;
 }
