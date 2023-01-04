@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import "./App.css";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { sendHTTP } from "./requests";
 
@@ -8,7 +8,7 @@ import Contact from "./components/Contact";
 import SignUpPage from "./pages/Auth/SignUp/SignUpPage";
 import SignInPage from "./pages/Auth/SignIn/SignInPage";
 import CreateTest from "./components/CreateTest";
-import User from "./components/User";
+import { UserPage } from "./pages/User/UserPage";
 import HomePage from "./pages/Home/HomePage";
 import TakeTest from "./components/TakeTest";
 import Footer from "./components/Footer";
@@ -32,22 +32,6 @@ const App = () => {
         if (res === undefined || res === null) return;
         if (res.data.tests !== undefined)
             this.setState({ tests: res.data.tests });
-    };
-
-    const login = (token, userId, username) => {
-        this.setState({
-            token: token,
-            userId: userId,
-            username: username,
-        });
-    };
-
-    const logout = () => {
-        this.setState({
-            token: null,
-            userId: null,
-            username: null,
-        });
     };
 
     const showSearch = (e) => {
@@ -127,7 +111,7 @@ const App = () => {
                     <Route path="/signin" element={<SignInPage />} />
                     <Route path="/createtest" element={<CreateTest />} />
                     <Route path="/taketest/:id" element={<TakeTest />} />
-                    <Route path="/user/:id" element={<User />} />
+                    <Route path="/user/:id" element={<UserPage />} />
                 </Routes>
             </main>
             <Footer />
