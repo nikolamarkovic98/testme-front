@@ -2,7 +2,6 @@ import "../index.css";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { sendHTTP } from "../../../requests";
-import { displayMessage } from "../../../helpers";
 
 const SignUpPage = (props) => {
     const [message, setMessage] = useState("");
@@ -50,7 +49,6 @@ const SignUpPage = (props) => {
         };
 
         const res = await sendHTTP(query);
-        if (res === undefined || res === null) return;
         if (res.data.createUser !== undefined) {
             if (
                 res.data.createUser.msg === "Username already taken" ||

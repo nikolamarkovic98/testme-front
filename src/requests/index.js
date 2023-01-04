@@ -1,28 +1,27 @@
 const BASE_URL = "http://localhost:4000/graphql";
 
-const sendHTTP = async (query) => {
-    try {
-        let response = null;
-        while (!response) {
-            response = await fetch(BASE_URL, {
+export const sendHTTP = (query) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let response = await fetch(BASE_URL, {
                 method: "POST",
                 body: JSON.stringify(query),
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
+            response = await response.json();
+            resolve(response);
+        } catch (err) {
+            reject("Server is down, please try again later");
         }
-        return await response.json();
-    } catch (err) {
-        console.log(err);
-    }
+    });
 };
 
-const sendAuthHTTP = async (query, token) => {
-    try {
-        let response = null;
-        while (!response) {
-            response = await fetch(BASE_URL, {
+export const sendAuthHTTP = (query, token) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let response = await fetch(BASE_URL, {
                 method: "POST",
                 body: JSON.stringify(query),
                 headers: {
@@ -30,11 +29,10 @@ const sendAuthHTTP = async (query, token) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            response = await response.json();
+            resolve(response);
+        } catch (err) {
+            reject("Server is down, please try again later");
         }
-        return await response.json();
-    } catch (err) {
-        console.log(err);
-    }
+    });
 };
-
-export { sendHTTP, sendAuthHTTP };

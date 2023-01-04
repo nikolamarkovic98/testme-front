@@ -1,11 +1,11 @@
-import React, { useState } from "react";
 import "./index.css";
-
+import React, { useState } from "react";
 import ContactIcon from "./contact_icon.svg";
 import TestIcon from "./test-icon.png";
 import { Link } from "react-router-dom";
 import { sendHTTP } from "../../requests";
-import myContext from "../../context/context";
+import { useDispatch, useSelector } from "react-redux";
+import { signOut } from "../../store/authSlice";
 
 const animation = (loading) => {
     if (loading.innerHTML.slice(7, 7 + 3) === "...") {
@@ -66,176 +66,144 @@ const Header = (props) => {
     const [tests, setTests] = useState([]);
     const [users, setUsers] = useState([]);
 
+    const { username, token } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+
     return (
-        <myContext.Consumer>
-            {(context) => {
-                return (
-                    <header>
-                        <div className="content-wrap">
-                            <div className="header-box">
-                                <h2 className="logo">
-                                    <Link to="/">testMe</Link>
-                                </h2>
-                            </div>
-                            <div className="header-box header-box-search">
-                                <div className="flex">
-                                    <input
-                                        type="text"
-                                        onChange={(e) =>
-                                            search(e, setTests, setUsers)
-                                        }
-                                        onFocus={(e) =>
-                                            check(e, setTests, setUsers)
-                                        }
-                                        placeholder="Search"
-                                        data-id="search"
-                                    />
-                                    <span id="loading">Loading</span>
-                                </div>
-                                {
-                                    <ul id="search">
-                                        {// I actually want to display one user and one test and so on... I need a for loop for this
-                                        users.map((user, index) => {
-                                            return (
-                                                <li key={Math.random()}>
-                                                    <Link
-                                                        to={`/user/${user.username}`}
-                                                    >
-                                                        <div>
-                                                            <img
-                                                                src={
-                                                                    ContactIcon
-                                                                }
-                                                                className="user-image"
-                                                                alt="Cant display contact icon"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <p>{`${user.firstName} ${user.lastName}`}</p>
-                                                            <p>
-                                                                {user.username}
-                                                            </p>
-                                                        </div>
-                                                    </Link>
-                                                </li>
-                                            );
-                                        })}
-                                        {tests.map((test) => {
-                                            return (
-                                                <li
-                                                    key={test._id}
-                                                    className="search-test"
-                                                    onClick={(e) =>
-                                                        context.showTest(
-                                                            test._id
-                                                        )
-                                                    }
-                                                >
-                                                    <img
-                                                        src={TestIcon}
-                                                        className="user-image"
-                                                        alt="Cant display contact icon"
-                                                    />
-                                                    <span>{test.title}</span>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                }
-                            </div>
-                            <div className="header-box">
-                                {context.token == null ? (
-                                    <nav>
-                                        <ul className="nav">
-                                            <li className="auth-link">
-                                                <Link to="/signup">SignUp</Link>
-                                            </li>
-                                            <li className="auth-link">
-                                                <Link to="/signin">SignIn</Link>
-                                            </li>
-                                        </ul>
-                                        <div className="toggle">
-                                            <div
-                                                className="hamburger"
-                                                onClick={(e) => {
-                                                    document
-                                                        .querySelector(
-                                                            "#hamburger-nav"
-                                                        )
-                                                        .classList.toggle(
-                                                            "hide"
-                                                        );
-                                                }}
-                                            >
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
+        <header>
+            <div className="content-wrap">
+                <div className="header-box">
+                    <h2 className="logo">
+                        <Link to="/">testMe</Link>
+                    </h2>
+                </div>
+                <div className="header-box header-box-search">
+                    <div className="flex">
+                        <input
+                            type="text"
+                            onChange={(e) => search(e, setTests, setUsers)}
+                            onFocus={(e) => check(e, setTests, setUsers)}
+                            placeholder="Search"
+                            data-id="search"
+                        />
+                        <span id="loading">Loading</span>
+                    </div>
+                    {
+                        <ul id="search">
+                            {// I actually want to display one user and one test and so on... I need a for loop for this
+                            users.map((user, index) => {
+                                return (
+                                    <li key={Math.random()}>
+                                        <Link to={`/user/${user.username}`}>
+                                            <div>
+                                                <img
+                                                    src={ContactIcon}
+                                                    className="user-image"
+                                                    alt="Cant display contact icon"
+                                                />
                                             </div>
-                                            <ul
-                                                id="hamburger-nav"
-                                                className="hide"
-                                            >
-                                                <li className="home">
-                                                    <Link to="/">Home</Link>
-                                                </li>
-                                                <li className="auth-link">
-                                                    <Link to="/signup">
-                                                        SignUp
-                                                    </Link>
-                                                </li>
-                                                <li className="auth-link">
-                                                    <Link to="/signin">
-                                                        SignIn
-                                                    </Link>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </nav>
-                                ) : (
-                                    <ul>
-                                        <li>
-                                            <span
-                                                onClick={(e) => {
-                                                    document
-                                                        .querySelector(
-                                                            "#logged"
-                                                        )
-                                                        .classList.toggle(
-                                                            "hide"
-                                                        );
-                                                }}
-                                            >
-                                                {context.username} | &#8595;
-                                            </span>
-                                            <ul id="logged" className="hide">
-                                                <li className="home">
-                                                    <Link to="/">Home</Link>
-                                                </li>
-                                                <li>
-                                                    <Link
-                                                        to={`/user/${context.username}`}
-                                                    >
-                                                        Your profile
-                                                    </Link>
-                                                </li>
-                                                <li>
-                                                    <Link to="/createtest">
-                                                        Create test
-                                                    </Link>
-                                                </li>
-                                                <li onClick={context.logout}>
-                                                    <Link to="/">SignOut</Link>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                )}
+                                            <div>
+                                                <p>{`${user.firstName} ${user.lastName}`}</p>
+                                                <p>{user.username}</p>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                            {tests.map((test) => {
+                                return (
+                                    <li
+                                        key={test._id}
+                                        className="search-test"
+                                        // onClick={(e) =>
+                                        //     context.showTest(test._id)
+                                        // }
+                                    >
+                                        <img
+                                            src={TestIcon}
+                                            className="user-image"
+                                            alt="Cant display contact icon"
+                                        />
+                                        <span>{test.title}</span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    }
+                </div>
+                <div className="header-box">
+                    {!token ? (
+                        <nav>
+                            <ul className="nav">
+                                <li className="auth-link">
+                                    <Link to="/signup">SignUp</Link>
+                                </li>
+                                <li className="auth-link">
+                                    <Link to="/signin">SignIn</Link>
+                                </li>
+                            </ul>
+                            <div className="toggle">
+                                <div
+                                    className="hamburger"
+                                    onClick={(e) => {
+                                        document
+                                            .querySelector("#hamburger-nav")
+                                            .classList.toggle("hide");
+                                    }}
+                                >
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                                <ul id="hamburger-nav" className="hide">
+                                    <li className="home">
+                                        <Link to="/">Home</Link>
+                                    </li>
+                                    <li className="auth-link">
+                                        <Link to="/signup">SignUp</Link>
+                                    </li>
+                                    <li className="auth-link">
+                                        <Link to="/signin">SignIn</Link>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                    </header>
-                );
-            }}
-        </myContext.Consumer>
+                        </nav>
+                    ) : (
+                        <ul>
+                            <li>
+                                <span
+                                    onClick={(e) => {
+                                        document
+                                            .querySelector("#logged")
+                                            .classList.toggle("hide");
+                                    }}
+                                >
+                                    {username} | &#8595;
+                                </span>
+                                <ul id="logged" className="hide">
+                                    <li className="home">
+                                        <Link to="/">Home</Link>
+                                    </li>
+                                    <li>
+                                        <Link to={`/user/${username}`}>
+                                            Your profile
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/createtest">
+                                            Create test
+                                        </Link>
+                                    </li>
+                                    <li onClick={() => dispatch(signOut())}>
+                                        <Link to="/">SignOut</Link>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </header>
     );
 };
 
