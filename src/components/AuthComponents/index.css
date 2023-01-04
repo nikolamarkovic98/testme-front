@@ -1,0 +1,77 @@
+.auth-wrapper{
+    display: flex;
+    justify-content: center;
+    margin: 60px 0;
+}
+.sign-up{
+    min-height: 400px;
+}
+.sign-in{
+    min-height: 270px;
+}
+.auth{
+    width: 60%;
+    text-align: center;
+    border-radius: 12px;
+}
+.auth .form-box{
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    margin: 0 auto;
+}
+.auth .form-box input{
+    width: 50%;
+    border: 1px solid #492827;
+}
+.auth .or{
+    margin-top: 10px;
+}
+.auth .or a{
+    font-weight: bold;
+    color: #A08258;
+    cursor: pointer;
+}
+.auth .or span:hover{
+    text-decoration: underline;
+}
+.auth .form-box:last-child{
+    display: block;
+    text-align: center;
+}
+.auth .msg{
+    text-align: center;
+}
+
+@media(max-width: 1200px){
+    .auth{
+        width: 80%;
+    }
+}
+@media(max-width: 900px){
+    .auth{
+        width: 100%;
+    }
+}
+@media(max-width: 700px){
+    .auth .form-box{
+        width: 60%;
+    }
+}
+@media(max-width: 600px){
+    .auth .form-box{
+        width: 70%;
+    }
+}
+@media(max-width: 500px){
+    .auth .form-box{
+        width: 80%;
+    }
+}
+@media(max-width: 400px){
+    .auth .form-box{
+        width: 100%;
+    }
+}
