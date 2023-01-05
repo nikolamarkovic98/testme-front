@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { sendHTTP } from "./requests";
 
 import Header from "./components/Header";
-import Contact from "./components/Contact";
+import ContactPage from "./pages/Contact/ContantPage";
 import SignUpPage from "./pages/Auth/SignUp/SignUpPage";
 import SignInPage from "./pages/Auth/SignIn/SignInPage";
 import CreateTestPage from "./pages/CreateTest/CreateTestPage";
@@ -75,7 +75,7 @@ const App = () => {
             <main>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/contact" element={<ContactPage />} />
                     <Route path="/signup" element={<SignUpPage />} />
                     <Route path="/signin" element={<SignInPage />} />
                     <Route path="/createtest" element={<CreateTestPage />} />
