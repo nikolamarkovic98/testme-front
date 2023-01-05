@@ -21,15 +21,18 @@ class Question extends React.Component {
         // this function edits the entire question
         this.setState({ editMode: !this.state.editMode });
         if (this.state.editMode)
-            this.props.editQuestion({
-                id: this.props.id,
-                question: this.state.question,
-                answer: this.state.answer,
-                A: this.state.A,
-                B: this.state.B,
-                C: this.state.C,
-                D: this.state.D,
-            });
+            this.props.editQuestion(
+                {
+                    id: this.props.id,
+                    question: this.state.question,
+                    answer: this.state.answer,
+                    A: this.state.A,
+                    B: this.state.B,
+                    C: this.state.C,
+                    D: this.state.D,
+                },
+                this.props.index
+            );
     };
 
     // a better approach would be to assign data-id to everything that will not make question displaer
@@ -63,14 +66,12 @@ class Question extends React.Component {
                 <div
                     className="arrow-up arrows"
                     data-id="action"
-                    onClick={() => this.props.moveQuestionUp(this.props.index)}
+                    onClick={() => this.props.changeOrder(this.props.index, -1)}
                 ></div>
                 <div
                     className="arrow-down arrows"
                     data-id="action"
-                    onClick={() =>
-                        this.props.moveQuestionDown(this.props.index)
-                    }
+                    onClick={() => this.props.changeOrder(this.props.index, 1)}
                 ></div>
                 <div className="question-box added">
                     <label>Question:</label>
@@ -199,7 +200,7 @@ class Question extends React.Component {
                 <button
                     className="del-btn"
                     data-id="action"
-                    onClick={() => this.props.removeQuestion(this.props.id)}
+                    onClick={() => this.props.removeQuestion(this.props.index)}
                 >
                     &times;
                 </button>

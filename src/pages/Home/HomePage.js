@@ -18,6 +18,7 @@ const HomePage = (props) => {
             </div>
             <div className="content-wrap">
                 <div className="home-wrapper">
+                    <h1>Tests:</h1>
                     <TestList tests={props.tests} h1={props.h1} />
                 </div>
             </div>

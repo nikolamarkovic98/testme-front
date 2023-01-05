@@ -1,9 +1,11 @@
 import "./index.css";
-import React from "react";
-import myContext from "../../context/context";
-import { createStr, redirectHome, displayMessage } from "../../helpers";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { createStr } from "../../helpers";
 import { sendAuthHTTP } from "../../requests";
 
+import { Tabs, Tab } from "../../components/Tabs/Tabs";
 import Question from "../../components/Question";
 
 const isURL = (string) => {
@@ -16,452 +18,378 @@ const isURL = (string) => {
     }
 };
 
-// export default CreateTestPage = () => {};
+const CreateTestPage = () => {
+    const [newQuestion, setNewQuestion] = useState({
+        question: "",
+        A: "",
+        B: "",
+        C: "",
+        D: "",
+        answer: "",
+    });
+    const [questions, setQuestions] = useState([]);
+    const [resources, setResources] = useState([]);
+    const [created, setCreated] = useState(false);
+    const [message, setMessage] = useState("");
 
-class CreateTestPage extends React.Component {
-    state = {
-        testCreated: false,
-        questions: [],
-        resources: [],
-    };
+    const titleRef = useRef(null);
+    const descRef = useRef(null);
+    const resourceRef = useRef(null);
 
-    static contextType = myContext;
+    const navigate = useNavigate();
+    const { token } = useSelector((state) => state.auth);
 
-    createTestValidation = (title, desc) => {
-        if (title === "") {
-            displayMessage("msg", "Title is required!", "red");
-            return true;
-        }
-        if (desc === "") {
-            displayMessage("msg", "Description is required!", "red");
-            return true;
-        }
-        if (this.state.questions.length === 0) {
-            displayMessage("msg", "Test must have questions!", "red");
-            return true;
-        }
+    const createTest = async () => {
+        if (created || !titleRef.current || !descRef.current) return;
 
-        return false;
-    };
-
-    createTest = async (e) => {
-        if (this.state.testCreated) {
-            displayMessage("msg", "You already created test!", "green");
+        const title = titleRef.current.value.trim();
+        if (!title) {
+            printMessage("Test must contain title!");
             return;
         }
 
-        const title = document.querySelector("#title").value.trim();
-        const desc = document.querySelector("#desc").value.trim();
+        const desc = descRef.current.value.trim();
+        if (!desc) {
+            printMessage("Test must contain description!");
+            return;
+        }
 
-        // validation
-        if (this.createTestValidation(title, desc)) return;
+        if (!questions.length) {
+            printMessage("Test must contain some questions!");
+            return;
+        }
 
-        displayMessage("msg", "", "red");
-
-        // questions must be stringified
-        const questions = createStr(JSON.stringify(this.state.questions));
+        // create test
+        const testQuestions = createStr(JSON.stringify(questions));
 
         // since it's just string in db I dont need to send generated ids...
-        let resources = "";
-        this.state.resources.forEach((resource, index) => {
-            if (resources.length - 1 === index) resources += `${resource.URL}`;
-            resources += `${resource.URL} `;
-        });
+        const testResources = resources.reduce(
+            (current, next) => `${current} ${next.URL}`,
+            ""
+        );
 
         const query = {
-            query: `mutation{createTest(testInput:{title:"${title}",desc:"${desc}",questions:"${questions}",resources:"${resources}"}){ msg }}`,
+            query: `mutation{createTest(testInput:{title:"${title}",desc:"${desc}",questions:"${testQuestions}",resources:"${testResources}"}){ msg }}`,
         };
 
-        const res = await sendAuthHTTP(query, this.context.token);
-        if (res === undefined || res === null) return;
-        if (res.data.createTest !== undefined) {
-            if (res.data.createTest.msg === "Test created!") {
-                displayMessage("msg", res.data.createTest.msg, "green");
-                this.setState({ testCreated: true });
-                this.context.loadTests();
+        try {
+            const res = await sendAuthHTTP(query, token);
+            if (res.data.createTest) {
+                if (res.data.createTest.msg === "Test created!") {
+                    setCreated(true);
+                }
+                printMessage(res.data.createTest.msg);
             }
+        } catch (err) {
+            printMessage(err);
         }
     };
 
-    handleSwitch = (e) => {
-        switch (e.target.innerHTML) {
-            case "General":
-                e.target.classList.add("active");
-                document
-                    .querySelector(".general-panel")
-                    .classList.add("active");
-                document
-                    .querySelector("#activate-add-question")
-                    .classList.remove("active");
-                document
-                    .querySelector(".question-panel")
-                    .classList.remove("active");
-                break;
-            case "Add Question":
-                e.target.classList.add("active");
-                document
-                    .querySelector(".question-panel")
-                    .classList.add("active");
-                document
-                    .querySelector("#activate-general")
-                    .classList.remove("active");
-                document
-                    .querySelector(".general-panel")
-                    .classList.remove("active");
-                break;
-        }
-    };
-
-    reset = () => {
-        document.querySelector("#question").value = "";
-        document.querySelector("#answer").value = "";
-        document.querySelector("#A").value = "";
-        document.querySelector("#B").value = "";
-        document.querySelector("#C").value = "";
-        document.querySelector("#D").value = "";
-    };
-
-    addResource = (e) => {
-        let URL = document.querySelector("#resource-add").value.trim();
-        document.querySelector("#resource-add").value = "";
-
-        // validation
-        if (URL === "") {
-            displayMessage("resource-msg", "Resource can't be empty", "red");
-            return;
-        }
-
-        if (!isURL(URL)) {
-            displayMessage("resource-msg", "Not valid URL!", "red");
-            return;
-        }
-
-        displayMessage("resource-msg", "", "red");
-
-        let resources = this.state.resources;
-        resources.push({
-            id: Math.random(),
-            URL: URL,
-        });
-        this.setState({ resources: resources });
-    };
-
-    removeResource = (id) => {
-        let resources = this.state.resources;
-        resources.forEach((resource, index) => {
-            if (resource.id === id) resources.splice(index, 1);
-        });
-        this.setState({ resources: resources });
-    };
-
-    addQuestion = (e) => {
-        // add question to the list and init inputs again
-        const question = document.querySelector("#question").value;
-        const answer = document.querySelector("#answer").value;
-        const A = document.querySelector("#A").value;
-        const B = document.querySelector("#B").value;
-        const C = document.querySelector("#C").value;
-        const D = document.querySelector("#D").value;
-
-        // validate question input
+    const addQuestion = () => {
         if (
-            question === "" ||
-            answer === "" ||
-            A === "" ||
-            B === "" ||
-            C === "" ||
-            D === ""
+            !newQuestion.question.trim() ||
+            !newQuestion.A.trim() ||
+            !newQuestion.B.trim() ||
+            !newQuestion.C.trim() ||
+            !newQuestion.D.trim() ||
+            !newQuestion.answer
         ) {
-            displayMessage(
-                "question-input-msg",
-                "All inputs are required!",
-                "red"
-            );
+            printMessage("All fields are required!");
             return;
         }
 
-        displayMessage("question-input-msg", "", "red");
-
-        let questions = this.state.questions;
-        questions.push({
-            id: Math.random(),
-            question,
-            answer,
-            A,
-            B,
-            C,
-            D,
+        setQuestions((prevState) => [
+            ...prevState,
+            { id: crypto.randomUUID(), ...newQuestion },
+        ]);
+        setNewQuestion({
+            question: "",
+            A: "",
+            B: "",
+            C: "",
+            D: "",
+            answer: "",
         });
-        this.setState({ questions: questions });
-        this.reset();
-        // next thing I should do is add question to question list actually but now I gotta go to store
     };
 
-    editQuestion = (question) => {
-        const questions = this.state.questions;
-        for (let i = 0; i < questions.length; i++)
-            if (questions[i].id === question.id) questions[i] = question;
-        this.setState({ questions: questions });
+    const editQuestion = (question, index) => {
+        setQuestions((prevState) => {
+            prevState[index] = question;
+            return [...prevState];
+        });
     };
 
-    removeQuestion = (id) => {
-        let questions = this.state.questions;
-        for (let i = 0; i < questions.length; i++) {
-            if (questions[i].id === id) {
-                questions.splice(i, 1);
-            }
-        }
-        this.setState({ questions: questions });
+    const removeQuestion = (index) => {
+        setQuestions((prevState) => {
+            prevState.splice(index, 1);
+            return [...prevState];
+        });
     };
 
-    moveQuestionUp = (index) => {
-        if (index === 0 || this.state.questions.length === 0) return;
-        let questions = this.state.questions;
-        let x = this.state.questions[index];
-        questions[index] = questions[index - 1];
-        questions[index - 1] = x;
-        this.setState({ questions: questions });
-    };
-
-    moveQuestionDown = (index) => {
-        if (
-            index === this.state.questions.length - 1 ||
-            this.state.questions.length === 0
-        )
+    const chageOrder = (index, offset) => {
+        const nextIndex = index + offset;
+        if (nextIndex === -1 || nextIndex === questions.length) {
             return;
-        let questions = this.state.questions;
-        let x = this.state.questions[index];
-        questions[index] = questions[index + 1];
-        questions[index + 1] = x;
-        this.setState({ questions: questions });
-    };
-
-    render() {
-        let questions;
-        if (this.state.questions.length !== 0) {
-            questions = this.state.questions.map((question, index) => {
-                return (
-                    <Question
-                        key={question.id}
-                        id={question.id}
-                        index={index}
-                        question={question.question}
-                        A={question.A}
-                        B={question.B}
-                        C={question.C}
-                        D={question.D}
-                        answer={question.answer}
-                        moveQuestionUp={this.moveQuestionUp}
-                        moveQuestionDown={this.moveQuestionDown}
-                        editQuestion={this.editQuestion}
-                        removeQuestion={this.removeQuestion}
-                    />
-                );
-            });
         }
 
-        const resources = this.state.resources.map((resource) => {
-            return (
-                <p className="resource" key={resource.id}>
-                    <a href={`${resource.URL}`} target="_blank">
-                        {resource.URL}
-                    </a>
-                    <button
-                        onClick={(e) => this.removeResource(resource.id)}
-                        className="remove-btn"
-                    >
-                        Remove
-                    </button>
-                </p>
-            );
+        setQuestions((prevState) => {
+            const tmp = prevState[index];
+            prevState[index] = prevState[nextIndex];
+            prevState[nextIndex] = tmp;
+            return [...prevState];
         });
+    };
 
-        return (
-            <div className="create-test">
-                <div className="content-wrap">
-                    <div className="info">
-                        <h1>Create Test</h1>
-                        <p>
-                            Here you can create your own tests that other people
-                            could try to solve!
-                        </p>
-                    </div>
-                    <div className="panel">
-                        <div className="panel-box">
-                            <nav>
-                                <div
-                                    onClick={this.handleSwitch}
-                                    id="activate-general"
-                                    className="active"
-                                >
-                                    General
-                                </div>
-                                <div
-                                    onClick={this.handleSwitch}
-                                    id="activate-add-question"
-                                >
-                                    Add Question
-                                </div>
-                            </nav>
-                            <div className="general-panel wrapper active">
-                                <h2>General</h2>
-                                <p>
-                                    Here you can set some of general information
-                                    about the test you are about to create such
-                                    as title and description.
-                                </p>
-                                <div className="general-panel-box">
-                                    <label>Title:</label>
-                                    <input
-                                        type="text"
-                                        className="question-input color"
-                                        id="title"
-                                        maxLength="40"
-                                    />
-                                </div>
-                                <div className="general-panel-box">
-                                    <label>Description:</label>
-                                    <textarea
-                                        className="question-input color"
-                                        id="desc"
-                                        maxLength="500"
-                                    ></textarea>
-                                </div>
-                                <div className="general-panel-box resources-wrapper">
+    const addResource = () => {
+        const current = resourceRef.current;
+        if (!current) return;
+
+        const resource = current.value.trim();
+        if (!resource) {
+            return;
+        }
+
+        if (!isURL(resource)) {
+            printMessage("Resource must be a valid URL/link");
+            return;
+        }
+
+        current.value = "";
+        setResources((prevState) => [
+            ...prevState,
+            { URL: resource, id: crypto.randomUUID() },
+        ]);
+    };
+    const removeResource = (index) => {
+        setResources((prevState) => {
+            prevState.splice(index, 1);
+            return [...prevState];
+        });
+    };
+
+    const handleQuestionChange = (e) => {
+        setNewQuestion((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    const printMessage = (msg) => {
+        setMessage(msg);
+        setTimeout(() => setMessage(""), 4000);
+    };
+
+    const questionsMap = questions.map((question, index) => (
+        <Question
+            key={question.id}
+            id={question.id}
+            index={index}
+            question={question.question}
+            A={question.A}
+            B={question.B}
+            C={question.C}
+            D={question.D}
+            answer={question.answer}
+            changeOrder={chageOrder}
+            editQuestion={editQuestion}
+            removeQuestion={removeQuestion}
+        />
+    ));
+
+    const resourcesMap = resources.map((resource, index) => (
+        <p className="resource" key={resource.id}>
+            <a href={`${resource.URL}`} target="_blank">
+                {resource.URL}
+            </a>
+            <button
+                onClick={() => removeResource(index)}
+                className="remove-btn"
+            >
+                Remove
+            </button>
+        </p>
+    ));
+
+    return (
+        <div className="create-test">
+            <div className="content-wrap">
+                <div className="info">
+                    <h1>Create Test</h1>
+                    <p>
+                        Here you can create your own tests that other people
+                        could try to solve!
+                    </p>
+                </div>
+                <div className="panel">
+                    <div className="panel-box">
+                        <Tabs defaultActiveKey="general">
+                            <Tab activeKey="general" title="General">
+                                <div className="general-panel wrapper active">
+                                    <h2>General</h2>
                                     <p>
-                                        If you know any useful literature that
-                                        could help users pass the test, you can
-                                        add it here:
+                                        Here you can set some of general
+                                        information about the test you are about
+                                        to create such as title and description.
                                     </p>
-                                    <div className="resources">
-                                        <div className="added-resources">
-                                            {resources}
+                                    <div className="general-panel-box">
+                                        <label>Title:</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Test title"
+                                            className="question-input color"
+                                            maxLength="40"
+                                            ref={titleRef}
+                                        />
+                                    </div>
+                                    <div className="general-panel-box">
+                                        <label>Description:</label>
+                                        <textarea
+                                            placeholder="Test description"
+                                            className="question-input color"
+                                            maxLength="500"
+                                            ref={descRef}
+                                        ></textarea>
+                                    </div>
+                                    <div className="general-panel-box resources-wrapper">
+                                        <p>
+                                            If you know any useful literature
+                                            that could help users pass the test,
+                                            you can add it here:
+                                        </p>
+                                        <div className="resources">
+                                            <div className="added-resources">
+                                                {resourcesMap}
+                                            </div>
+                                            <div className="control">
+                                                <input
+                                                    type="text"
+                                                    className="question-input color"
+                                                    placeholder="Link"
+                                                    ref={resourceRef}
+                                                />
+                                                <button
+                                                    className="classic-btn"
+                                                    onClick={addResource}
+                                                >
+                                                    Add
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="control">
-                                            <input
-                                                type="text"
-                                                className="question-input color"
-                                                id="resource-add"
-                                                placeholder="Link"
-                                            />
-                                            <button
-                                                className="classic-btn"
-                                                onClick={this.addResource}
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p id="resource-msg" className="msg"></p>
-                                </div>
-                            </div>
-                            <div className="question-panel wrapper">
-                                <h2>Add Question</h2>
-                                <div className="question-box">
-                                    <label>Question:</label>
-                                    <input
-                                        type="text"
-                                        className="question-input color"
-                                        id="question"
-                                        placeholder="(2+2)"
-                                    />
-                                </div>
-                                <div className="question-box">
-                                    <div className="answer-box">
-                                        <label>A)</label>
-                                        <input
-                                            type="text"
-                                            className="question-input color"
-                                            id="A"
-                                            placeholder="1"
-                                        />
-                                    </div>
-                                    <div className="answer-box">
-                                        <label>B)</label>
-                                        <input
-                                            type="text"
-                                            className="question-input color"
-                                            id="B"
-                                            placeholder="2"
-                                        />
-                                    </div>
-                                    <div className="answer-box">
-                                        <label>C)</label>
-                                        <input
-                                            type="text"
-                                            className="question-input color"
-                                            id="C"
-                                            placeholder="3"
-                                        />
-                                    </div>
-                                    <div className="answer-box">
-                                        <label>D)</label>
-                                        <input
-                                            type="text"
-                                            className="question-input color"
-                                            id="D"
-                                            placeholder="4"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="question-box">
-                                    <label>Corrent answer:</label>
-                                    <div>
-                                        <select id="answer">
-                                            <option></option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="C">C</option>
-                                            <option value="D">D</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="question-box align">
-                                    <button
-                                        className="classic-btn"
-                                        onClick={this.addQuestion}
-                                    >
-                                        Add Question
-                                    </button>
-                                    <div>
                                         <p
-                                            id="question-input-msg"
+                                            id="resource-msg"
                                             className="msg"
                                         ></p>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="panel-box wrapper">
-                            <h2>Questions review</h2>
-                            {questions}
-                        </div>
+                            </Tab>
+                            <Tab activeKey="questions" title="Questions">
+                                <div className="question-panel wrapper">
+                                    <h2>Add Question</h2>
+                                    <div className="question-box">
+                                        <label>Question:</label>
+                                        <input
+                                            type="text"
+                                            name="question"
+                                            placeholder="(2+2)"
+                                            className="question-input color"
+                                            onChange={handleQuestionChange}
+                                            value={newQuestion.question}
+                                        />
+                                    </div>
+                                    <div className="question-box">
+                                        <div className="answer-box">
+                                            <label>A)</label>
+                                            <input
+                                                type="text"
+                                                name="A"
+                                                className="question-input color"
+                                                placeholder="1"
+                                                onChange={handleQuestionChange}
+                                                value={newQuestion.A}
+                                            />
+                                        </div>
+                                        <div className="answer-box">
+                                            <label>B)</label>
+                                            <input
+                                                type="text"
+                                                name="B"
+                                                placeholder="2"
+                                                className="question-input color"
+                                                onChange={handleQuestionChange}
+                                                value={newQuestion.B}
+                                            />
+                                        </div>
+                                        <div className="answer-box">
+                                            <label>C)</label>
+                                            <input
+                                                type="text"
+                                                name="C"
+                                                placeholder="3"
+                                                className="question-input color"
+                                                onChange={handleQuestionChange}
+                                                value={newQuestion.C}
+                                            />
+                                        </div>
+                                        <div className="answer-box">
+                                            <label>D)</label>
+                                            <input
+                                                type="text"
+                                                name="D"
+                                                placeholder="4"
+                                                className="question-input color"
+                                                onChange={handleQuestionChange}
+                                                value={newQuestion.D}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="question-box">
+                                        <label>Corrent answer:</label>
+                                        <div>
+                                            <select
+                                                name="answer"
+                                                onChange={handleQuestionChange}
+                                                value={newQuestion.answer}
+                                            >
+                                                <option></option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="question-box align">
+                                        <button
+                                            className="classic-btn"
+                                            onClick={addQuestion}
+                                        >
+                                            Add Question
+                                        </button>
+                                    </div>
+                                </div>
+                            </Tab>
+                        </Tabs>
                     </div>
-                    <div className="create-test-options">
-                        <button
-                            className="cancel-btn"
-                            onClick={(e) =>
-                                redirectHome(
-                                    e,
-                                    this.context.history,
-                                    this.state.testCreated
-                                )
-                            }
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="classic-btn"
-                            onClick={this.createTest}
-                        >
-                            Create Test
-                        </button>
+                    <div className="panel-box wrapper">
+                        <h2>Questions review</h2>
+                        {questionsMap}
                     </div>
-                    <p id="msg" className="msg"></p>
                 </div>
+                <div className="create-test-options">
+                    <button
+                        className="cancel-btn"
+                        onClick={() => navigate("/")}
+                    >
+                        Cancel
+                    </button>
+                    <button className="classic-btn" onClick={createTest}>
+                        Create Test
+                    </button>
+                </div>
+                <p className="msg">{message}</p>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default CreateTestPage;

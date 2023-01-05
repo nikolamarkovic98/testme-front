@@ -2,13 +2,13 @@ import "./index.css";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { Tabs, Tab } from "../../components/Tabs/Tabs";
 import TestList from "../../components/TestList";
 import PassedTestList from "../../components/PassedTestList";
 import { sendHTTP } from "../../requests";
 
 const UserPage = () => {
     const [user, setUser] = useState(null);
-    const [tab, setTab] = useState("created");
     const { id } = useParams();
 
     useEffect(() => {
@@ -43,39 +43,27 @@ const UserPage = () => {
                     <>
                         <h1>{`${user.firstName} ${user.lastName}`}</h1>
                         <div className="tests">
-                            <nav>
-                                <div
-                                    className={
-                                        tab === "created" ? "active" : ""
-                                    }
-                                    onClick={() => setTab("created")}
+                            <Tabs defaultActiveKey="created-tests">
+                                <Tab
+                                    activeKey="created-tests"
+                                    title="Created Tests"
                                 >
-                                    Created tests
-                                </div>
-                                <div
-                                    className={tab === "passed" ? "active" : ""}
-                                    onClick={() => setTab("passed")}
+                                    <TestList
+                                        tests={user.createdTests}
+                                        num_of_passedTests={
+                                            user.passedTests.length || 0
+                                        }
+                                    />
+                                </Tab>
+                                <Tab
+                                    activeKey="passed-tests"
+                                    title="Passed Tests"
                                 >
-                                    Passed tests
-                                </div>
-                            </nav>
-                            <section
-                                className={tab === "created" ? "active" : ""}
-                            >
-                                <TestList
-                                    tests={user.createdTests}
-                                    num_of_passedTests={
-                                        user.passedTests.length || 0
-                                    }
-                                />
-                            </section>
-                            <section
-                                className={tab === "passed" ? "active" : ""}
-                            >
-                                <PassedTestList
-                                    passedTests={user.passedTests}
-                                />
-                            </section>
+                                    <PassedTestList
+                                        passedTests={user.passedTests}
+                                    />
+                                </Tab>
+                            </Tabs>
                         </div>
                     </>
                 ) : (

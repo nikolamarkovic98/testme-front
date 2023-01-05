@@ -2,40 +2,25 @@
     min-height: 600px;
     margin: 60px 0;
 }
-.user .tests {
-    width: 100%;
-}
-.user .tests nav {
-    text-align: center;
-}
-.user .tests nav div {
-    display: inline-block;
-    padding: 20px 0;
-    width: 50%;
+
+.user .tab-wrapper {
+    padding: 20px;
     background-color: #fff6e0;
     border: 1px solid #492827;
-    cursor: pointer;
 }
-.user .tests nav div:hover {
+
+.user .tab-wrapper:hover {
     background-color: #604f47;
-    color: #fff;
 }
-.user nav div.active {
+
+.user .tab-wrapper.active {
     background-color: #492827;
     color: #fff;
 }
-.user nav div.active:hover {
-    background-color: #492827;
-}
+
 .list {
     background-color: #fff6e0;
     box-shadow: 2px 2px 8px #333;
-}
-.user section {
-    display: none;
-}
-.user section.active {
-    display: block;
 }
 
 @media (max-width: 420px) {
