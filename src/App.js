@@ -7,12 +7,13 @@ import Header from "./components/Header";
 import Contact from "./components/Contact";
 import SignUpPage from "./pages/Auth/SignUp/SignUpPage";
 import SignInPage from "./pages/Auth/SignIn/SignInPage";
-import CreateTest from "./components/CreateTest";
-import { UserPage } from "./pages/User/UserPage";
+import CreateTestPage from "./pages/CreateTest/CreateTestPage";
+import UserPage from "./pages/User/UserPage";
 import HomePage from "./pages/Home/HomePage";
 import TakeTest from "./components/TakeTest";
 import Footer from "./components/Footer";
 import TestBox from "./components/TestBox";
+import { Tabs, Tab } from "./components/Tabs/Tabs";
 
 const App = () => {
     const [state, setState] = useState({
@@ -109,7 +110,7 @@ const App = () => {
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/signup" element={<SignUpPage />} />
                     <Route path="/signin" element={<SignInPage />} />
-                    <Route path="/createtest" element={<CreateTest />} />
+                    <Route path="/createtest" element={<CreateTestPage />} />
                     <Route path="/taketest/:id" element={<TakeTest />} />
                     <Route path="/user/:id" element={<UserPage />} />
                 </Routes>

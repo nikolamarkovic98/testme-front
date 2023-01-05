@@ -6,7 +6,7 @@ import TestList from "../../components/TestList";
 import PassedTestList from "../../components/PassedTestList";
 import { sendHTTP } from "../../requests";
 
-export const UserPage = () => {
+const UserPage = () => {
     const [user, setUser] = useState(null);
     const [tab, setTab] = useState("created");
     const { id } = useParams();
@@ -85,3 +85,5 @@ export const UserPage = () => {
         </div>
     );
 };
+
+export default UserPage;
