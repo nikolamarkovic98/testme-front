@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import UserImage from "../TestCard/contact_icon.svg";
-import { getDate } from "../../helpers";
+import { getDate } from "../../utils/utils";
 
 const PassedTestBox = (props) => {
     let resources = [],

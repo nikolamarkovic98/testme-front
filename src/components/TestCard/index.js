@@ -2,7 +2,7 @@ import "./index.css";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserImage from "./contact_icon.svg";
-import { getDate } from "../../helpers";
+import { getDate } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
 import { useSelector } from "react-redux";
 

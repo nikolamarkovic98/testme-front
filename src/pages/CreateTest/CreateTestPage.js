@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
-import { createStr } from "../../helpers";
+import { createStr } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
 
 import { Tabs, Tab } from "../../components/Tabs/Tabs";

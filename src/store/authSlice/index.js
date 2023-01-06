@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getLSState } from "../../utils/utils";
 
 const initialState = {
     username: "",
@@ -8,12 +9,14 @@ const initialState = {
 
 export const authSlice = createSlice({
     name: "auth",
-    initialState,
+    initialState: getLSState() || initialState,
     reducers: {
         signIn: (state, action) => {
+            localStorage.setItem("testme-app", JSON.stringify(action.payload));
             return action.payload;
         },
         signOut: () => {
+            localStorage.setItem("testme-app", "");
             return initialState;
         },
     },
