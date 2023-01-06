@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { sendHTTP } from "../../requests";
 
-import TestBox from "../TestBox";
+import TestCard from "../TestCard";
 
-const TestList = (props) => {
+const TestList = () => {
     const [tests, setTests] = useState([]);
 
     useEffect(() => {
@@ -24,28 +24,16 @@ const TestList = (props) => {
         loadTests();
     }, []);
 
-    const testsMap = tests.map((test) => {
-        // I need to check the way I get num_of_passedTests because I send it differently in App and in User components
-        let num_of_passedTests;
-        if (test.creator.passedTests !== undefined)
-            num_of_passedTests = test.creator.passedTests.length;
-        else if (props.num_of_passedTests !== undefined)
-            num_of_passedTests = props.num_of_passedTests;
+    const removeTest = (index) => {
+        setTests((prevState) => {
+            prevState.splice(index, 1);
+            return [...prevState];
+        });
+    };
 
-        return (
-            <TestBox
-                key={test._id}
-                _id={test._id}
-                title={test.title}
-                desc={test.desc}
-                resources={test.resources}
-                questions={test.questions}
-                creator={test.creator}
-                createdAt={test.createdAt}
-                num_of_passedTests={num_of_passedTests}
-            />
-        );
-    });
+    const testsMap = tests.map((test) => (
+        <TestCard key={test._id} hideTest={removeTest} {...test} />
+    ));
 
     return (
         <div className="test-list">

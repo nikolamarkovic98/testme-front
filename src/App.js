@@ -1,6 +1,7 @@
 import "./App.css";
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { Navigate } from "react-router";
 import { sendHTTP } from "./requests";
 
 import Header from "./components/Header";
@@ -12,9 +13,12 @@ import UserPage from "./pages/User/UserPage";
 import HomePage from "./pages/Home/HomePage";
 import TakeTest from "./components/TakeTest";
 import Footer from "./components/Footer";
-import TestBox from "./components/TestBox";
+import TestCard from "./components/TestCard";
+import { useSelector } from "react-redux";
 
 const App = () => {
+    const { token } = useSelector((state) => state.auth);
+
     const showSearch = (e) => {
         // if user is viewing single test
         // everything with data-id == dialog will make dialog disappear
@@ -54,7 +58,7 @@ const App = () => {
                 <div className="dialog-wrapper" data-id="dialog">
                     <div className="dialog-second-wrapper" data-id="dialog">
                         <div className="dialog-flex" data-id="dialog">
-                            <TestBox
+                            <TestCard
                                 key={test._id}
                                 _id={test._id}
                                 title={test.title}
@@ -74,6 +78,19 @@ const App = () => {
             <Header />
             <main>
                 <Routes>
+                    {!token && (
+                        <Route
+                            path="/createtest"
+                            element={<Navigate to="/signin" />}
+                        />
+                    )}
+
+                    {!token && (
+                        <Route
+                            path="/taketest/:id"
+                            element={<Navigate to="/signin" />}
+                        />
+                    )}
                     <Route path="/" element={<HomePage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/signup" element={<SignUpPage />} />
