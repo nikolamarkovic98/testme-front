@@ -1,7 +1,5 @@
-import React from "react";
-
-import Answer from "./sub-components/Answer";
 import "./index.css";
+import React from "react";
 
 // Component that displays question on CreateTestPage
 class Question extends React.Component {
@@ -179,14 +177,16 @@ class Question extends React.Component {
                     </div>
                     <div className="question-box align added">
                         <label>Corrent answer:</label>
-                        <div>
-                            <Answer
-                                data-id="action"
-                                answer={this.props.answer}
-                                editMode={this.state.editMode}
-                                editAnswer={this.editAnswer}
-                            />
-                        </div>
+                        <select
+                            defaultValue={this.state.answer}
+                            onChange={(e) => this.editAnswer(e.target.value)}
+                            disabled={!this.state.editMode}
+                        >
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
                     </div>
                     <div className="question-box">
                         <button
