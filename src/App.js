@@ -11,7 +11,7 @@ import SignInPage from "./pages/Auth/SignIn/SignInPage";
 import CreateTestPage from "./pages/CreateTest/CreateTestPage";
 import UserPage from "./pages/User/UserPage";
 import HomePage from "./pages/Home/HomePage";
-import TakeTest from "./components/TakeTest";
+import TakeTest from "./pages/TakeTest";
 import Footer from "./components/Footer";
 import TestCard from "./components/TestCard";
 import { useSelector } from "react-redux";

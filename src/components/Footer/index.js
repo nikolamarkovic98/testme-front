@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import BgPicture from "./bg.png";
 import "./index.css";
 
-const Footer = (props) => {
+const Footer = () => {
     return (
         <footer>
             <div className="one">
