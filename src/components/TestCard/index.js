@@ -15,7 +15,7 @@ const TestCard = (props) => {
         resources,
         creator,
         createdAt,
-        hideTest,
+        removeTest,
     } = props;
 
     const [showResources, setShowResources] = useState(false);
@@ -54,7 +54,6 @@ const TestCard = (props) => {
                     (test) => test._id === _id
                 );
 
-                // if match znaci da je vec polagao ovaj test
                 if (index !== -1) {
                     if (
                         window.confirm(
@@ -72,7 +71,7 @@ const TestCard = (props) => {
         }
     };
 
-    const removeTest = (_id, token) => {
+    const handleRemoveTest = (_id, token) => {
         const wrap = async () => {
             if (window.confirm("Are you sure you want to delete this test?")) {
                 const query = {
@@ -80,7 +79,7 @@ const TestCard = (props) => {
                 };
                 const res = await sendAuthHTTP(query, token);
                 if (res.data.removeTest === "Removed") {
-                    hideTest(index);
+                    removeTest(index);
                 }
             }
         };
@@ -134,7 +133,7 @@ const TestCard = (props) => {
                 </Link>
                 <div className="user-panel-box">
                     {username === creator.username ? (
-                        <span onClick={() => removeTest(_id, token)}>
+                        <span onClick={() => handleRemoveTest(_id, token)}>
                             &times;
                         </span>
                     ) : null}

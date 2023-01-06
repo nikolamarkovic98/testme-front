@@ -1,11 +1,14 @@
 import "./index.css";
 import React, { useState } from "react";
-import ContactIcon from "./contact_icon.svg";
+import { useDispatch, useSelector } from "react-redux";
+import useToggle from "../../hooks/useToggle";
+import useDebounce from "../../hooks/useDebounce";
+import { signOut } from "../../store/authSlice";
+import { sendHTTP } from "../../requests";
+
 import TestIcon from "./test-icon.png";
 import { Link } from "react-router-dom";
-import { sendHTTP } from "../../requests";
-import { useDispatch, useSelector } from "react-redux";
-import { signOut } from "../../store/authSlice";
+import ContactIcon from "./contact_icon.svg";
 
 const animation = (loading) => {
     if (loading.innerHTML.slice(7, 7 + 3) === "...") {
@@ -63,11 +66,22 @@ const search = async (e, setTests, setUsers) => {
 };
 
 const Header = (props) => {
+    const [search, setSearch] = useState("");
     const [tests, setTests] = useState([]);
     const [users, setUsers] = useState([]);
 
+    const [toggle, setToggle] = useToggle(false);
+
     const { username, token } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
+
+    useDebounce(
+        () => {
+            console.log(search);
+        },
+        1000,
+        [search]
+    );
 
     return (
         <header>
@@ -81,10 +95,9 @@ const Header = (props) => {
                     <div className="flex">
                         <input
                             type="text"
-                            onChange={(e) => search(e, setTests, setUsers)}
-                            onFocus={(e) => check(e, setTests, setUsers)}
                             placeholder="Search"
-                            data-id="search"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={search}
                         />
                         <span id="loading">Loading</span>
                     </div>
@@ -171,16 +184,10 @@ const Header = (props) => {
                     ) : (
                         <ul>
                             <li>
-                                <span
-                                    onClick={(e) => {
-                                        document
-                                            .querySelector("#logged")
-                                            .classList.toggle("hide");
-                                    }}
-                                >
+                                <span onClick={setToggle}>
                                     {username} | &#8595;
                                 </span>
-                                <ul id="logged" className="hide">
+                                <ul className={!toggle ? "hide" : ""}>
                                     <li className="home">
                                         <Link to="/">Home</Link>
                                     </li>

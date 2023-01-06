@@ -1,8 +1,8 @@
 import "./index.css";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
+import useArray from "../../hooks/useArray";
 import { createStr } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
 
@@ -28,8 +28,18 @@ const CreateTestPage = () => {
         D: "",
         answer: "",
     });
-    const [questions, setQuestions] = useState([]);
-    const [resources, setResources] = useState([]);
+    const {
+        array: questions,
+        setArray: setQuestions,
+        push: pushQuestion,
+        update: updateQuestion,
+        remove: removeQuestion,
+    } = useArray();
+    const {
+        array: resources,
+        push: pushResources,
+        remove: removeResource,
+    } = useArray();
     const [created, setCreated] = useState(false);
     const [message, setMessage] = useState("");
 
@@ -99,10 +109,7 @@ const CreateTestPage = () => {
             return;
         }
 
-        setQuestions((prevState) => [
-            ...prevState,
-            { id: crypto.randomUUID(), ...newQuestion },
-        ]);
+        pushQuestion({ id: crypto.randomUUID(), ...newQuestion });
         setNewQuestion({
             question: "",
             A: "",
@@ -110,20 +117,6 @@ const CreateTestPage = () => {
             C: "",
             D: "",
             answer: "",
-        });
-    };
-
-    const editQuestion = (question, index) => {
-        setQuestions((prevState) => {
-            prevState[index] = question;
-            return [...prevState];
-        });
-    };
-
-    const removeQuestion = (index) => {
-        setQuestions((prevState) => {
-            prevState.splice(index, 1);
-            return [...prevState];
         });
     };
 
@@ -156,16 +149,7 @@ const CreateTestPage = () => {
         }
 
         current.value = "";
-        setResources((prevState) => [
-            ...prevState,
-            { URL: resource, id: crypto.randomUUID() },
-        ]);
-    };
-    const removeResource = (index) => {
-        setResources((prevState) => {
-            prevState.splice(index, 1);
-            return [...prevState];
-        });
+        pushResources({ URL: resource, id: crypto.randomUUID() });
     };
 
     const handleQuestionChange = (e) => {
@@ -191,9 +175,9 @@ const CreateTestPage = () => {
             C={question.C}
             D={question.D}
             answer={question.answer}
-            changeOrder={chageOrder}
-            editQuestion={editQuestion}
+            editQuestion={updateQuestion}
             removeQuestion={removeQuestion}
+            changeOrder={chageOrder}
         />
     ));
 

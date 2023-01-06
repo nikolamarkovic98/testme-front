@@ -1,38 +1,22 @@
 import "./index.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import useUpdateEffect from "../../hooks/useUpdateEffect";
+import useArray from "../../hooks/useArray";
 import { Link } from "react-router-dom";
-import { sendHTTP } from "../../requests";
 
 import TestCard from "../TestCard";
 
-const TestList = () => {
-    const [tests, setTests] = useState([]);
+const TestList = (props) => {
+    const { array: tests, setArray: setTests, remove: removeTest } = useArray(
+        props.tests
+    );
 
-    useEffect(() => {
-        const loadTests = async () => {
-            const query = {
-                query: `query{tests{_id title desc resources creator{username createdTests{_id} passedTests{_id}} createdAt}}`,
-            };
-
-            const res = await sendHTTP(query);
-            if (!res) return;
-            if (res.data.tests) {
-                setTests(res.data.tests);
-            }
-        };
-
-        loadTests();
-    }, []);
-
-    const removeTest = (index) => {
-        setTests((prevState) => {
-            prevState.splice(index, 1);
-            return [...prevState];
-        });
-    };
+    useUpdateEffect(() => {
+        setTests(props.tests);
+    }, [props.tests]);
 
     const testsMap = tests.map((test) => (
-        <TestCard key={test._id} hideTest={removeTest} {...test} />
+        <TestCard key={test._id} removeTest={removeTest} {...test} />
     ));
 
     return (

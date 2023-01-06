@@ -16,7 +16,7 @@ const UserPage = () => {
             const query = {
                 query: `query{user(username:"${id}"){
                     _id firstName lastName username password msg
-                    createdTests{_id title desc resources creator{username createdTests{ _id }} createdAt} 
+                    createdTests{_id title desc resources creator{username createdTests{ _id } passedTests{ _id }} createdAt} 
                     passedTests{_id title grade resources score minutes seconds creator{username createdTests{_id}} createdAt}
                 }}`,
             };
@@ -48,12 +48,7 @@ const UserPage = () => {
                                     activeKey="created-tests"
                                     title="Created Tests"
                                 >
-                                    <TestList
-                                        tests={user.createdTests}
-                                        num_of_passedTests={
-                                            user.passedTests.length || 0
-                                        }
-                                    />
+                                    <TestList tests={user.createdTests} />
                                 </Tab>
                                 <Tab
                                     activeKey="passed-tests"
