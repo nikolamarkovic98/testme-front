@@ -1,38 +1,30 @@
 import "./index.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router";
+import useFetch from "../../hooks/useFetch";
 
 import QuestionBox from "../../components/QuestionBox";
 import { sendAuthHTTP } from "../../requests";
 import { createStr } from "../../utils/utils";
 
 const TakeTestPage = () => {
-    const [test, setTest] = useState(null);
-    const [completed, setCompleted] = useState(false);
-    const [startDate] = useState(new Date());
     const { id } = useParams();
     const { token } = useSelector((state) => state.auth);
+    const { loading, data, setData: setTest } = useFetch(
+        {
+            query: `query{test(_id: "${id}"){_id title desc questions{_id question answer A B C D} createdAt msg}}`,
+        },
+        token,
+        [id]
+    );
+    const [completed, setCompleted] = useState(false);
+    const [startDate] = useState(new Date());
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const getTest = async () => {
-            const query = {
-                query: `query{test(_id: "${id}"){_id title desc questions{_id question answer A B C D} createdAt msg}}`,
-            };
+    if (loading) return null;
 
-            const res = await sendAuthHTTP(query, token);
-            if (res === undefined || res === null) return;
-            if (res.data.test !== undefined) {
-                if (res.data.test.msg === "Success") {
-                    // set state and start stopwatch
-                    setTest(res.data.test);
-                }
-            }
-        };
-
-        getTest();
-    }, []);
+    const { test } = data.data;
 
     const rateTest = async () => {
         if (completed) {
@@ -63,14 +55,22 @@ const TakeTestPage = () => {
         }
     };
 
+    const handleCancel = () => {
+        if (
+            window.confirm(
+                "Are you sure you want to exit? All progress will be lost."
+            )
+        ) {
+            navigate("/");
+        }
+    };
+
     const setAnswer = (index, answer) => {
         setTest((prevState) => {
             prevState.questions[index].answer = answer;
             return { ...prevState };
         });
     };
-
-    if (!test) return null;
 
     const questions = test.questions.map((question, index) => {
         return (
@@ -98,10 +98,7 @@ const TakeTestPage = () => {
                 </p>
                 <div className="questions">{questions}</div>
                 <div className="take-test-options">
-                    <button
-                        className="cancel-btn"
-                        onClick={() => navigate("/")}
-                    >
+                    <button className="cancel-btn" onClick={handleCancel}>
                         Cancel
                     </button>
                     <button className="classic-btn" onClick={rateTest}>

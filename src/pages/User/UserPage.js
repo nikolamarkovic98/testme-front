@@ -1,40 +1,29 @@
 import "./index.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
+import useFetch from "../../hooks/useFetch";
 
 import { Tabs, Tab } from "../../components/Tabs/Tabs";
 import TestList from "../../components/TestList";
 import PassedTestList from "../../components/PassedTestList";
-import { sendHTTP } from "../../requests";
 
 const UserPage = () => {
-    const [user, setUser] = useState(null);
     const { id } = useParams();
+    const { loading, data } = useFetch(
+        {
+            query: `query{user(username:"${id}"){
+            _id firstName lastName username password msg
+            createdTests{_id title desc resources creator{username createdTests{ _id } passedTests{ _id }} createdAt} 
+            passedTests{_id title grade resources score minutes seconds creator{username createdTests{_id}} createdAt}
+        }}`,
+        },
+        "",
+        [id]
+    );
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const query = {
-                query: `query{user(username:"${id}"){
-                    _id firstName lastName username password msg
-                    createdTests{_id title desc resources creator{username createdTests{ _id } passedTests{ _id }} createdAt} 
-                    passedTests{_id title grade resources score minutes seconds creator{username createdTests{_id}} createdAt}
-                }}`,
-            };
+    if (loading) return null;
 
-            try {
-                const res = await sendHTTP(query);
-                if (res.data.user) {
-                    if (res.data.user.msg !== "User does not exist") {
-                        setUser(res.data.user);
-                    }
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        fetchUser();
-    }, [id]);
+    const { user } = data.data;
 
     return (
         <div className="user">

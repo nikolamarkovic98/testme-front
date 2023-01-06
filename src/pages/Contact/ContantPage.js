@@ -28,6 +28,7 @@ const ContactPage = () => {
 
         try {
             const res = await sendHTTP(query);
+            console.log(res);
             if (res.data.sendEmail) {
                 if (res.data.sendEmail === "Success") {
                     printMessage(res.data.sendEmail);

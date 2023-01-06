@@ -1,29 +1,16 @@
 import "./index.css";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import useFetch from "../../hooks/useFetch";
 import TestList from "../../components/TestList";
-import { sendHTTP } from "../../requests";
 
 const HomePage = () => {
-    const [tests, setTests] = useState([]);
+    const { loading, data } = useFetch({
+        query: `query{tests{ _id title desc creator{ _id username createdTests{ _id } passedTests{ _id } } }}`,
+    });
 
-    useEffect(() => {
-        const fetchTests = async () => {
-            const query = {
-                query: `query{tests{ _id title desc creator{ _id username createdTests{ _id } passedTests{ _id } } }}`,
-            };
+    if (loading) return null;
 
-            try {
-                const res = await sendHTTP(query);
-                if (res.data.tests) {
-                    setTests(res.data.tests);
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        fetchTests();
-    }, []);
+    const { tests } = data.data;
 
     return (
         <div className="home">
