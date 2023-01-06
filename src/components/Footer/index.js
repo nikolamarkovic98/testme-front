@@ -1,8 +1,7 @@
+import "./index.css";
 import React from "react";
 import { Link } from "react-router-dom";
-
 import BgPicture from "./bg.png";
-import "./index.css";
 
 const Footer = () => {
     return (

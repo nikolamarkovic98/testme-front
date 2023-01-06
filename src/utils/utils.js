@@ -36,3 +36,13 @@ export const getLSState = () => {
     let lsState = localStorage.getItem("testme-app");
     return lsState ? JSON.parse(lsState) : "";
 };
+
+export const isURL = (url) => {
+    // if it throws error its not a valid URL
+    try {
+        new URL(url);
+        return true;
+    } catch (err) {
+        return false;
+    }
+};

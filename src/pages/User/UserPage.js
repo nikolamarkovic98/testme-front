@@ -11,11 +11,7 @@ const UserPage = () => {
     const { id } = useParams();
     const { loading, data } = useFetch(
         {
-            query: `query{user(username:"${id}"){
-            _id firstName lastName username password msg
-            createdTests{_id title desc resources creator{username createdTests{ _id } passedTests{ _id }} createdAt} 
-            passedTests{_id title grade resources score minutes seconds creator{username createdTests{_id}} createdAt}
-        }}`,
+            query: `query{user(username:"${id}"){_id firstName lastName username password msg createdTests{_id title desc resources creator{username createdTests{ _id } passedTests{ _id }} createdAt} passedTests{_id title grade resources score minutes seconds creator{username createdTests{_id} passedTests { _id } } createdAt} }}`,
         },
         "",
         [id]

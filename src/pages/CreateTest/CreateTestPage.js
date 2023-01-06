@@ -3,21 +3,11 @@ import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useArray from "../../hooks/useArray";
-import { createStr } from "../../utils/utils";
+import { createStr, isURL } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
 
 import { Tabs, Tab } from "../../components/Tabs/Tabs";
 import Question from "../../components/Question";
-
-const isURL = (string) => {
-    // if it throws error its not a valid URL
-    try {
-        new URL(string);
-        return true;
-    } catch (err) {
-        return false;
-    }
-};
 
 const CreateTestPage = () => {
     const [newQuestion, setNewQuestion] = useState({

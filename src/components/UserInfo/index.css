@@ -1,0 +1,12 @@
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.user-info img {
+    margin-right: 0.6rem;
+}
+.user-info h3 {
+    margin: 0;
+    font-weight: bold;
+}

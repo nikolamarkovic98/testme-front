@@ -1,40 +1,25 @@
 import "./index.css";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import UserImage from "./contact_icon.svg";
+import React from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getDate } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
-import { useSelector } from "react-redux";
 
-const TestCard = (props) => {
-    const {
-        _id,
-        index,
-        title,
-        desc,
-        resources,
-        creator,
-        createdAt,
-        removeTest,
-    } = props;
+import ResourcesComponent from "../Resources/Resources";
+import UserInfo from "../UserInfo/UserInfo";
 
-    const [showResources, setShowResources] = useState(false);
+const TestCard = ({
+    _id,
+    index,
+    title,
+    desc,
+    resources,
+    creator,
+    createdAt,
+    removeTest,
+}) => {
     const { username, token } = useSelector((state) => state.auth);
     const navigate = useNavigate();
-
-    const resourcesMap = resources
-        ? resources.split(" ").map((resource, index) => {
-              if (index === 0) return;
-              return (
-                  <div key={_id + index} className="resource">
-                      &#8594;{" "}
-                      <a href={resource} target="_blank">
-                          {resource}
-                      </a>
-                  </div>
-              );
-          })
-        : null;
 
     const checkIfPassed = async (e) => {
         e.preventDefault();
@@ -47,6 +32,7 @@ const TestCard = (props) => {
         const query = {
             query: `query{user(username:"${username}"){passedTests{_id}}}`,
         };
+
         try {
             const res = await sendAuthHTTP(query, token);
             if (res.data.user) {
@@ -89,66 +75,26 @@ const TestCard = (props) => {
 
     return (
         <div className="test-box">
-            <div className={"resource-box" + (showResources ? " display" : "")}>
-                <div
-                    className="resource-header"
-                    onClick={() => {
-                        setShowResources((prev) => !prev);
-                    }}
-                >
-                    {showResources ? <>&#8679;</> : <>&#8681;</>}
-                </div>
-                <div className={"resource-wrapper"}>
-                    <h2>List of sites that you could find useful:</h2>
-                    <div className="resources">
-                        {resourcesMap ? resourcesMap : <div>Empty</div>}
-                    </div>
-                </div>
-            </div>
-            <div className="user-panel">
-                <Link
-                    to={`/user/${creator.username}`}
-                    className="user-panel-box"
-                    data-id="dialog"
-                >
-                    <img
-                        className="user-image"
-                        data-id="dialog"
-                        src={UserImage}
-                        alt="Can't load user image"
-                    />
-                    <div data-id="dialog">
-                        <p>
-                            <span className="test-creator" data-id="dialog">
-                                {creator.username}
-                            </span>
-                        </p>
-                        <p data-id="dialog">
-                            Created tests: {creator.createdTests.length}
-                        </p>
-                        <p data-id="dialog">
-                            Passed tests: {creator.passedTests.length}
-                        </p>
-                    </div>
-                </Link>
-                <div className="user-panel-box">
-                    {username === creator.username ? (
-                        <span onClick={() => handleRemoveTest(_id, token)}>
-                            &times;
-                        </span>
-                    ) : null}
-                </div>
-            </div>
+            <ResourcesComponent testId={_id} resources={resources} />
+            <UserInfo
+                username={username}
+                createdTestsLen={creator.createdTests.length}
+                passedTestsLen={creator.passedTests.length}
+            />
             <div className="test-panel">
                 <h2>{title}</h2>
                 <p className="date">{getDate(createdAt)}</p>
                 <p className="desc">{desc}</p>
                 <div className="options">
-                    <button
-                        className="taketest-btn"
-                        onClick={checkIfPassed}
-                        data-id="dialog"
-                    >
+                    {username === creator.username ? (
+                        <button
+                            className="taketest-btn"
+                            onClick={() => handleRemoveTest(_id, token)}
+                        >
+                            Remove
+                        </button>
+                    ) : null}
+                    <button className="taketest-btn" onClick={checkIfPassed}>
                         Take Test
                     </button>
                 </div>

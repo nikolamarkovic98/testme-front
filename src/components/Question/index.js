@@ -3,6 +3,7 @@ import React from "react";
 import Answer from "./sub-components/Answer";
 import "./index.css";
 
+// Component that displays question on CreateTestPage
 class Question extends React.Component {
     constructor(props) {
         super(props);

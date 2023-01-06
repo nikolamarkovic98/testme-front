@@ -1,64 +1,28 @@
 import "./index.css";
 import React from "react";
 
+const answers = ["A", "B", "C", "D"];
+
+// Component that displays question on TakeTestPage - once the user starts the test
 const QuestionBox = (props) => {
+    const { question, index, setAnswer } = props;
+
     return (
         <div className="question">
             <div className="question-box">
-                <h2>{props.question}?</h2>
+                <h2>{question}?</h2>
             </div>
-            <div className="question-box">
-                <label className="under">A)</label>
-                <input
-                    type="radio"
-                    id={`answer-${props.id}`}
-                    name={`answer-${props.id}`}
-                    value="A"
-                    onChange={(e) =>
-                        props.setAnswer(props.index, e.target.value)
-                    }
-                />
-                <label htmlFor={props.A}>{props.A}</label>
-            </div>
-            <div className="question-box">
-                <label className="under">B)</label>
-                <input
-                    type="radio"
-                    id={`answer-${props.id}`}
-                    name={`answer-${props.id}`}
-                    value="B"
-                    onChange={(e) =>
-                        props.setAnswer(props.index, e.target.value)
-                    }
-                />
-                <label htmlFor={props.B}>{props.B}</label>
-            </div>
-            <div className="question-box">
-                <label className="under">C)</label>
-                <input
-                    type="radio"
-                    id={`answer-${props.id}`}
-                    name={`answer-${props.id}`}
-                    value="C"
-                    onChange={(e) =>
-                        props.setAnswer(props.index, e.target.value)
-                    }
-                />
-                <label htmlFor={props.C}>{props.C}</label>
-            </div>
-            <div className="question-box">
-                <label className="under">D)</label>
-                <input
-                    type="radio"
-                    id={`answer-${props.id}`}
-                    name={`answer-${props.id}`}
-                    value="D"
-                    onChange={(e) =>
-                        props.setAnswer(props.index, e.target.value)
-                    }
-                />
-                <label htmlFor={props.D}>{props.D}</label>
-            </div>
+            {answers.map((answer) => (
+                <div className="question-box">
+                    <label className="under">A)</label>
+                    <input
+                        type="radio"
+                        value={answer}
+                        onChange={(e) => setAnswer(index, e.target.value)}
+                    />
+                    <label htmlFor={props[answer]}>{props[answer]}</label>
+                </div>
+            ))}
         </div>
     );
 };
