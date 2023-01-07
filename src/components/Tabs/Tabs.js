@@ -14,6 +14,7 @@ export const Tabs = ({ children, defaultActiveKey }) => {
         const tab = (
             <div
                 key={tabKey}
+                data-testid="tab-wrapper"
                 className={"tab-wrapper" + activeClass}
                 onClick={() => setKey(tabKey)}
             >
@@ -21,7 +22,11 @@ export const Tabs = ({ children, defaultActiveKey }) => {
             </div>
         );
         const content = (
-            <div key={tabKey} className={"content" + activeClass}>
+            <div
+                key={tabKey}
+                data-testid="content"
+                className={"content" + activeClass}
+            >
                 {child.props.children}
             </div>
         );
