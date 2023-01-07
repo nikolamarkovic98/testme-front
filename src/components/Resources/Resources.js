@@ -9,7 +9,11 @@ const ResourcesComponent = ({ testId, resources }) => {
         ? resources.split(" ").map((resource, index) => {
               if (index === 0) return null;
               return (
-                  <div key={testId + index} className="resource">
+                  <div
+                      key={testId + index}
+                      data-testid="resource"
+                      className="resource"
+                  >
                       &#8594;{" "}
                       <a
                           href={resource}
@@ -26,8 +30,12 @@ const ResourcesComponent = ({ testId, resources }) => {
     const isActive = show ? " active" : "";
 
     return (
-        <div className={"resource-box" + isActive}>
-            <div className={"resource-header"} onClick={setShow}>
+        <div data-testid="resource-box" className={"resource-box" + isActive}>
+            <div
+                data-testid="resource-header"
+                className={"resource-header"}
+                onClick={setShow}
+            >
                 <span className={isActive}>&#8681;</span>
             </div>
             <div className="resource-wrapper">

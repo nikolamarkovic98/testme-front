@@ -2,9 +2,10 @@ import "./App.css";
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router";
+import { useSelector } from "react-redux";
 
 import Header from "./components/Header";
-import ContactPage from "./pages/Contact/ContantPage";
+import ContactPage from "./pages/Contact/ContactPage";
 import SignUpPage from "./pages/Auth/SignUp/SignUpPage";
 import SignInPage from "./pages/Auth/SignIn/SignInPage";
 import CreateTestPage from "./pages/CreateTest/CreateTestPage";
@@ -12,7 +13,6 @@ import UserPage from "./pages/User/UserPage";
 import HomePage from "./pages/Home/HomePage";
 import TakeTest from "./pages/TakeTest";
 import Footer from "./components/Footer";
-import { useSelector } from "react-redux";
 
 const App = () => {
     const { token } = useSelector((state) => state.auth);
