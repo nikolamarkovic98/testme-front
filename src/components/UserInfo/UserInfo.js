@@ -9,9 +9,11 @@ const UserInfoComponent = ({ username, createdTestsLen, passedTestsLen }) => {
         <Link to={`/user/${username}`} className="user-info">
             <img className="user-image" src={UserImage} alt="Not found" />
             <div>
-                <h3>{username}</h3>
-                <p>Created tests: {createdTestsLen}</p>
-                <p>Passed tests: {passedTestsLen}</p>
+                <h3 data-testid="username">{username}</h3>
+                <p data-testid="created-tests">
+                    Created tests: {createdTestsLen}
+                </p>
+                <p data-testid="passed-tests">Passed tests: {passedTestsLen}</p>
             </div>
         </Link>
     );
