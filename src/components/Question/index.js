@@ -1,186 +1,104 @@
 import "./index.css";
-import React from "react";
+import React, { useState } from "react";
+import useToggle from "../../hooks/useToggle";
+
+const answerOptions = ["A", "B", "C", "D"];
 
 // Component that displays question on CreateTestPage
-class Question extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            question: this.props.question,
-            answer: this.props.answer,
-            A: this.props.A,
-            B: this.props.B,
-            C: this.props.C,
-            D: this.props.D,
-            editMode: false,
-        };
-    }
+const Question = ({
+    index,
+    id,
+    question,
+    answer,
+    A,
+    B,
+    C,
+    D,
+    editQuestion,
+    removeQuestion,
+    changeOrder,
+}) => {
+    const [questionData, setQuestionData] = useState({
+        question,
+        answer,
+        A,
+        B,
+        C,
+        D,
+    });
+    const [edit, setEdit] = useToggle(false);
+    const [showContent, setShowContent] = useToggle(false);
 
-    edit = (e) => {
-        // this function edits the entire question
-        this.setState({ editMode: !this.state.editMode });
-        if (this.state.editMode)
-            this.props.editQuestion(
-                {
-                    id: this.props.id,
-                    question: this.state.question,
-                    answer: this.state.answer,
-                    A: this.state.A,
-                    B: this.state.B,
-                    C: this.state.C,
-                    D: this.state.D,
-                },
-                this.props.index
-            );
-    };
-
-    // a better approach would be to assign data-id to everything that will not make question displaer
-    displayQuestion = (e) => {
-        if (this.state.editMode) return;
-        const id = e.target.getAttribute("data-id");
-        if (id === "action") {
-            return;
+    const handleEdit = () => {
+        setEdit();
+        if (edit) {
+            editQuestion(index, {
+                id,
+                ...questionData,
+            });
         }
-
-        // if id starts with digit we must use getElementById
-        let question = document.getElementById(`${this.props.id}`);
-        question.classList.toggle("hide");
     };
 
-    editQuestion = (e) => this.setState({ question: e.target.value });
-    editAnswer = (value) => this.setState({ answer: value });
-    editA = (e) => this.setState({ A: e.target.value });
-    editB = (e) => this.setState({ B: e.target.value });
-    editC = (e) => this.setState({ C: e.target.value });
-    editD = (e) => this.setState({ D: e.target.value });
+    const handleShowContent = () => {
+        if (edit) return;
+        setShowContent();
+    };
 
-    render() {
-        return (
-            <div
-                className="question hide"
-                id={`${this.props.id}`}
-                onClick={this.displayQuestion}
-            >
-                <div className="index">{this.props.index + 1})</div>
+    const handleChange = (e) => {
+        setQuestionData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
+
+    return (
+        <div className="question">
+            <div onClick={handleShowContent}>
+                <div className="index">{index + 1})</div>
                 <div
                     className="arrow-up arrows"
-                    data-id="action"
-                    onClick={() => this.props.changeOrder(this.props.index, -1)}
+                    onClick={() => changeOrder(index, -1)}
                 ></div>
                 <div
                     className="arrow-down arrows"
-                    data-id="action"
-                    onClick={() => this.props.changeOrder(this.props.index, 1)}
+                    onClick={() => changeOrder(index, 1)}
                 ></div>
                 <div className="question-box added">
                     <label>Question:</label>
-                    {this.state.editMode === false ? (
-                        <input
-                            type="text"
-                            className="question-input"
-                            id={`${this.props.id}-question`}
-                            value={this.state.question}
-                            readOnly
-                        />
-                    ) : (
-                        <input
-                            type="text"
-                            className="question-input color"
-                            id={`${this.props.id}-question`}
-                            value={this.state.question}
-                            onChange={this.editQuestion}
-                        />
-                    )}
+                    <input
+                        type="text"
+                        className={"question-input" + (edit ? " edit" : "")}
+                        name="question"
+                        readOnly={!edit}
+                        value={questionData.question}
+                        onChange={handleChange}
+                    />
                 </div>
-                <div className="content">
+                <div className={"content" + (showContent ? " show" : "")}>
                     <div className="question-box added">
-                        <div className="answer-box">
-                            <label>A)</label>
-                            {this.state.editMode === false ? (
+                        {answerOptions.map((option) => (
+                            <div key={option} className="answer-box">
+                                <label>{option})</label>
                                 <input
                                     type="text"
-                                    className="question-input"
-                                    id={`${this.props.id}-A`}
-                                    value={this.state.A}
-                                    readOnly
+                                    className={
+                                        "question-input" + (edit ? " edit" : "")
+                                    }
+                                    name={option}
+                                    readOnly={!edit}
+                                    value={questionData[option]}
+                                    onChange={handleChange}
                                 />
-                            ) : (
-                                <input
-                                    type="text"
-                                    className="question-input color"
-                                    id={`${this.props.id}-A`}
-                                    value={this.state.A}
-                                    onChange={this.editA}
-                                />
-                            )}
-                        </div>
-                        <div className="answer-box">
-                            <label>B)</label>
-                            {this.state.editMode === false ? (
-                                <input
-                                    type="text"
-                                    className="question-input"
-                                    id={`${this.props.id}-B`}
-                                    value={this.state.B}
-                                    readOnly
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    className="question-input color"
-                                    id={`${this.props.id}-B`}
-                                    value={this.state.B}
-                                    onChange={this.editB}
-                                />
-                            )}
-                        </div>
-                        <div className="answer-box">
-                            <label>C)</label>
-                            {this.state.editMode === false ? (
-                                <input
-                                    type="text"
-                                    className="question-input"
-                                    id={`${this.props.id}-C`}
-                                    value={this.state.C}
-                                    readOnly
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    className="question-input color"
-                                    id={`${this.props.id}-C`}
-                                    value={this.state.C}
-                                    onChange={this.editC}
-                                />
-                            )}
-                        </div>
-                        <div className="answer-box">
-                            <label>D)</label>
-                            {this.state.editMode === false ? (
-                                <input
-                                    type="text"
-                                    className="question-input"
-                                    id={`${this.props.id}-D`}
-                                    value={this.state.D}
-                                    readOnly
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    className="question-input color"
-                                    id={`${this.props.id}-D`}
-                                    value={this.state.D}
-                                    onChange={this.editD}
-                                />
-                            )}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                     <div className="question-box align added">
                         <label>Corrent answer:</label>
                         <select
-                            defaultValue={this.state.answer}
-                            onChange={(e) => this.editAnswer(e.target.value)}
-                            disabled={!this.state.editMode}
+                            name="answer"
+                            disabled={!edit}
+                            value={questionData.answer}
+                            onChange={(e) => handleChange(e)}
                         >
                             <option value="A">A</option>
                             <option value="B">B</option>
@@ -188,26 +106,20 @@ class Question extends React.Component {
                             <option value="D">D</option>
                         </select>
                     </div>
-                    <div className="question-box">
-                        <button
-                            className="classic-btn"
-                            data-id="action"
-                            onClick={this.edit}
-                        >
-                            {this.state.editMode ? "Save" : "Edit"}
-                        </button>
-                    </div>
                 </div>
-                <button
-                    className="del-btn"
-                    data-id="action"
-                    onClick={() => this.props.removeQuestion(this.props.index)}
-                >
-                    &times;
-                </button>
             </div>
-        );
-    }
-}
+            {showContent ? (
+                <div className="question-box">
+                    <button className="classic-btn" onClick={handleEdit}>
+                        {edit ? "Save" : "Edit"}
+                    </button>
+                </div>
+            ) : null}
+            <button className="del-btn" onClick={() => removeQuestion(index)}>
+                &times;
+            </button>
+        </div>
+    );
+};
 
 export default Question;

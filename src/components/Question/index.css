@@ -1,69 +1,72 @@
-.question{
+.question {
     position: relative;
     padding: 10px 0;
     margin: 10px 0;
     border: 1px solid #492827;
     border-radius: 12px;
 }
-.question .question-box.added{
+.question .question-box.added {
     text-align: left;
 }
-.question.hide .content{
+.question .content {
     display: none;
 }
-.question .question-box.added{
+.question .content.show {
+    display: block;
+}
+.question .question-box.added {
     padding: 14px 40px 10px 14px;
 }
-.question .question-box.added .question-input{
-    border: 1px solid #F0E3C5;
+.question .question-box.added .question-input {
+    border: 1px solid #f0e3c5;
     cursor: default;
 }
-.question .question-box .question-input.color{
+.question .question-box .question-input.edit {
     cursor: auto;
-} 
-.question .question-box .question-input.color{
+}
+.question .question-box .question-input.edit {
     border: 1px solid #492827;
 }
-.question .question-box .question-input.color:hover,
-.question .question-box .question-input.color:focus{
+.question .question-box .question-input.edit:hover,
+.question .question-box .question-input.edit:focus {
     background-color: rgb(240, 240, 240);
 }
-.question-box.added .answer-box{
+.question-box.added .answer-box {
     text-align: left;
 }
-.question-box.added{
+.question-box.added {
     border: none;
     text-align: center;
 }
-.question-box:last-child{
+.question-box:last-child {
     padding: 0 10px;
 }
 
 /* ABSOLUTE ITEMS */
-.question .index{
+.question .index {
     position: absolute;
     top: 2px;
     left: 4px;
     font-size: 13px;
     font-weight: bold;
 }
-.question .del-btn{
+.question .del-btn {
     position: absolute;
     padding: 0 6px;
     top: 6px;
     right: 6px;
     font-size: 20px;
-    background-color: inherit;;
+    background-color: inherit;
     border: 1px solid red;
     border-radius: 50%;
     color: red;
     cursor: pointer;
 }
-.question .del-btn:hover{
+.question .del-btn:hover {
     background-color: red;
     color: #fff;
 }
-.arrows{
+.arrows {
     position: absolute;
     right: 8px;
     width: 21px;
@@ -74,11 +77,11 @@
     font-size: 30px;
     cursor: pointer;
 }
-.arrow-up{
+.arrow-up {
     top: 36px;
-    background-image: url('./up-arrow.png');
+    background-image: url("./up-arrow.png");
 }
-.arrow-down{
+.arrow-down {
     top: 60px;
-    background-image: url('./down-arrow.png');
+    background-image: url("./down-arrow.png");
 }

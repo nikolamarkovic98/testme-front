@@ -77,7 +77,7 @@ const TestCard = ({
         <div className="test-box">
             <ResourcesComponent testId={_id} resources={resources} />
             <UserInfo
-                username={username}
+                username={creator.username}
                 createdTestsLen={creator.createdTests.length}
                 passedTestsLen={creator.passedTests.length}
             />

@@ -1,7 +1,7 @@
 import "./index.css";
 import React from "react";
 
-const answers = ["A", "B", "C", "D"];
+const answerOptions = ["A", "B", "C", "D"];
 
 // Component that displays question on TakeTestPage - once the user starts the test
 const QuestionBox = (props) => {
@@ -12,7 +12,7 @@ const QuestionBox = (props) => {
             <div className="question-box">
                 <h2>{question}?</h2>
             </div>
-            {answers.map((answer) => (
+            {answerOptions.map((answer) => (
                 <div className="question-box">
                     <label className="under">A)</label>
                     <input

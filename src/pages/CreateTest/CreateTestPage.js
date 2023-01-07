@@ -157,17 +157,11 @@ const CreateTestPage = () => {
     const questionsMap = questions.map((question, index) => (
         <Question
             key={question.id}
-            id={question.id}
             index={index}
-            question={question.question}
-            A={question.A}
-            B={question.B}
-            C={question.C}
-            D={question.D}
-            answer={question.answer}
             editQuestion={updateQuestion}
             removeQuestion={removeQuestion}
             changeOrder={chageOrder}
+            {...question}
         />
     ));
 
