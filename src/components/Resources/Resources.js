@@ -7,11 +7,15 @@ const ResourcesComponent = ({ testId, resources }) => {
 
     const resourcesMap = resources
         ? resources.split(" ").map((resource, index) => {
-              if (index === 0) return;
+              if (index === 0) return null;
               return (
                   <div key={testId + index} className="resource">
                       &#8594;{" "}
-                      <a href={resource} target="_blank">
+                      <a
+                          href={resource}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                      >
                           {resource}
                       </a>
                   </div>

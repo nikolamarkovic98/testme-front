@@ -7,11 +7,7 @@ import UserImage from "./contact_icon.svg";
 const UserInfoComponent = ({ username, createdTestsLen, passedTestsLen }) => {
     return (
         <Link to={`/user/${username}`} className="user-info">
-            <img
-                className="user-image"
-                src={UserImage}
-                alt="Can't load user image"
-            />
+            <img className="user-image" src={UserImage} alt="Not found" />
             <div>
                 <h3>{username}</h3>
                 <p>Created tests: {createdTestsLen}</p>

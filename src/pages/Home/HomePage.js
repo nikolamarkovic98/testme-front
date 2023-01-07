@@ -5,7 +5,7 @@ import TestList from "../../components/TestList";
 
 const HomePage = () => {
     const { loading, data } = useFetch({
-        query: `query{tests{ _id title desc createdAt creator{ _id username createdTests{ _id } passedTests{ _id } } }}`,
+        query: `query{tests{ _id title desc createdAt resources creator{ _id username createdTests{ _id } passedTests{ _id } } }}`,
     });
 
     if (loading) return null;

@@ -16,7 +16,7 @@ const Footer = () => {
                             project or make your own version!
                         </p>
                         <a
-                            href="https://github.com/nikolamarkovic98/testme"
+                            href="https://github.com/nikolamarkovic98/testme-front"
                             rel="noopener noreferrer"
                             target="_blank"
                             className="classic-btn"
@@ -45,7 +45,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a
-                                    href="http://portfolio-nikola.herokuapp.com/"
+                                    href="https://nikola-portfolio.onrender.com/"
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
@@ -55,7 +55,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a
-                                    href="https://www.linkedin.com/in/nikola-markovic-1a6267162"
+                                    href="https://www.linkedin.com/in/markovicjs/"
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >

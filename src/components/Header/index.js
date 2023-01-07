@@ -10,74 +10,42 @@ import TestIcon from "./test-icon.png";
 import { Link } from "react-router-dom";
 import ContactIcon from "./contact_icon.svg";
 
-const animation = (loading) => {
-    if (loading.innerHTML.slice(7, 7 + 3) === "...") {
-        loading.innerHTML = "Loading";
-        return;
-    }
-    loading.innerHTML += ".";
-};
-
-// checks if input is empty and resets lists - I need this as function because onChange bugs a little so I need additional check on onFocus
-const check = (e, setTests, setUsers) => {
-    if (e.target.value === "") {
-        setUsers([]);
-        setTests([]);
-        return true;
-    }
-    return false;
-};
-
-const search = async (e, setTests, setUsers) => {
-    if (check(e, setTests, setUsers)) return;
-
-    const query = {
-        query: `query{search(search:"${e.target.value}"){users{username firstName lastName} tests{_id title} msg}}`,
-    };
-
-    const loading = document.querySelector("#loading");
-
-    loading.style.display = "inline-block";
-    const interval = setInterval(() => animation(loading), 200);
-    const res = await sendHTTP(query);
-    clearInterval(interval);
-    loading.style.display = "none";
-
-    if (res === undefined || res === null) return;
-    if (res.data.search !== undefined) {
-        if (res.data.search.users.length !== 0) {
-            // I dont want more than three items in search
-            if (res.data.search.users.length > 3) {
-                setUsers(res.data.search.users.splice(0, 3));
-            } else {
-                setUsers(res.data.search.users);
-            }
-        } else setUsers([]);
-
-        if (res.data.search.tests.length !== 0) {
-            // I dont want more than three items in search
-            if (res.data.search.tests.length > 3) {
-                setTests(res.data.search.tests.splice(0, 3));
-            } else {
-                setTests(res.data.search.tests);
-            }
-        } else setTests([]);
-    }
-};
-
-const Header = (props) => {
+const Header = () => {
     const [search, setSearch] = useState("");
     const [tests, setTests] = useState([]);
     const [users, setUsers] = useState([]);
 
     const [toggle, setToggle] = useToggle(false);
+    const [showSearch, setShowSearch] = useToggle(false);
 
     const { username, token } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     useDebounce(
         () => {
-            console.log(search);
+            if (!search) {
+                setTests([]);
+                setUsers([]);
+                return;
+            }
+
+            const sendReq = async () => {
+                const query = {
+                    query: `query{search(search:"${search}"){users{_id username firstName lastName} tests{_id title} msg}}`,
+                };
+
+                try {
+                    const res = await sendHTTP(query);
+                    if (res.data.search) {
+                        setTests(res.data.search.tests);
+                        setUsers(res.data.search.users);
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            };
+
+            sendReq();
         },
         1000,
         [search]
@@ -96,42 +64,36 @@ const Header = (props) => {
                         <input
                             type="text"
                             placeholder="Search"
-                            onChange={(e) => setSearch(e.target.value)}
                             value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onFocus={setShowSearch}
+                            onBlur={() => setTimeout(setShowSearch, 100)}
                         />
                         <span id="loading">Loading</span>
                     </div>
                     {
-                        <ul id="search">
+                        <ul id="search" className={showSearch ? "show" : ""}>
                             {// I actually want to display one user and one test and so on... I need a for loop for this
-                            users.map((user, index) => {
-                                return (
-                                    <li key={Math.random()}>
-                                        <Link to={`/user/${user.username}`}>
-                                            <div>
-                                                <img
-                                                    src={ContactIcon}
-                                                    className="user-image"
-                                                    alt="Cant display contact icon"
-                                                />
-                                            </div>
-                                            <div>
-                                                <p>{`${user.firstName} ${user.lastName}`}</p>
-                                                <p>{user.username}</p>
-                                            </div>
-                                        </Link>
-                                    </li>
-                                );
-                            })}
+                            users.map((user) => (
+                                <li key={user._id}>
+                                    <Link to={`/user/${user.username}`}>
+                                        <div>
+                                            <img
+                                                src={ContactIcon}
+                                                className="user-image"
+                                                alt="Cant display contact icon"
+                                            />
+                                        </div>
+                                        <div>
+                                            <p>{`${user.firstName} ${user.lastName}`}</p>
+                                            <p>{user.username}</p>
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
                             {tests.map((test) => {
                                 return (
-                                    <li
-                                        key={test._id}
-                                        className="search-test"
-                                        // onClick={(e) =>
-                                        //     context.showTest(test._id)
-                                        // }
-                                    >
+                                    <li key={test._id} className="search-test">
                                         <img
                                             src={TestIcon}
                                             className="user-image"
@@ -156,14 +118,7 @@ const Header = (props) => {
                                 </li>
                             </ul>
                             <div className="toggle">
-                                <div
-                                    className="hamburger"
-                                    onClick={(e) => {
-                                        document
-                                            .querySelector("#hamburger-nav")
-                                            .classList.toggle("hide");
-                                    }}
-                                >
+                                <div className="hamburger">
                                     <div></div>
                                     <div></div>
                                     <div></div>

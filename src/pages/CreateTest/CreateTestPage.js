@@ -167,7 +167,11 @@ const CreateTestPage = () => {
 
     const resourcesMap = resources.map((resource, index) => (
         <p className="resource" key={resource.id}>
-            <a href={`${resource.URL}`} target="_blank">
+            <a
+                href={`${resource.URL}`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 {resource.URL}
             </a>
             <button
