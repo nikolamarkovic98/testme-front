@@ -1,20 +1,3 @@
-export const redirectHome = (e, history, taskCompleted) => {
-    e.preventDefault();
-    if (taskCompleted) history.push("/");
-    else if (
-        window.confirm(
-            "Are you sure you want to cancel? Any progress will be unsaved."
-        )
-    )
-        history.push("/");
-};
-
-export const displayMessage = (id, msg, color) => {
-    const p = document.querySelector(`#${id}`);
-    p.style.color = color;
-    p.innerHTML = msg;
-};
-
 export const createStr = (str) => {
     let newStr = "";
     for (let i = 0; i < str.length; i++) {
