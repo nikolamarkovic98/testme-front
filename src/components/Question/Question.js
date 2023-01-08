@@ -53,7 +53,7 @@ const Question = ({
 
     return (
         <div className="question">
-            <div onClick={handleShowContent}>
+            <div data-testid="content" onClick={handleShowContent}>
                 <div className="index">{index + 1})</div>
                 <div
                     className="arrow-up arrows"
@@ -66,6 +66,7 @@ const Question = ({
                 <div className="question-box added">
                     <label>Question:</label>
                     <input
+                        data-testid="question"
                         type="text"
                         className={"question-input" + (edit ? " edit" : "")}
                         name="question"
@@ -80,6 +81,7 @@ const Question = ({
                             <div key={option} className="answer-box">
                                 <label>{option})</label>
                                 <input
+                                    data-testid="option"
                                     type="text"
                                     className={
                                         "question-input" + (edit ? " edit" : "")
@@ -95,6 +97,7 @@ const Question = ({
                     <div className="question-box align added">
                         <label>Corrent answer:</label>
                         <select
+                            data-testid="answer"
                             name="answer"
                             disabled={!edit}
                             value={questionData.answer}
@@ -110,7 +113,11 @@ const Question = ({
             </div>
             {showContent ? (
                 <div className="question-box">
-                    <button className="classic-btn" onClick={handleEdit}>
+                    <button
+                        data-testid="edit-btn"
+                        className="classic-btn"
+                        onClick={handleEdit}
+                    >
                         {edit ? "Save" : "Edit"}
                     </button>
                 </div>

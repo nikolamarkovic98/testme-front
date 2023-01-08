@@ -7,7 +7,7 @@ import { createStr, isURL } from "../../utils/utils";
 import { sendAuthHTTP } from "../../requests";
 
 import { Tabs, Tab } from "../../components/Tabs/Tabs";
-import Question from "../../components/Question";
+import Question from "../../components/Question/Question";
 
 const CreateTestPage = () => {
     const [newQuestion, setNewQuestion] = useState({
